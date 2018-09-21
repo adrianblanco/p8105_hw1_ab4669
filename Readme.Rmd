@@ -1,0 +1,271 @@
+---
+title: "Homework 1"
+output: html_document
+---
+
+# Homework 1
+
+## Context
+This assignment reinforces ideas in the building blocks topic.
+
+## Due date and submission.
+Due: September 21 at 4:00pm.
+
+Please submit (via courseworks) the web address of the GitHub repo containing your work for this assignment; git commits after the due date will cause the assignment to be considered late.
+
+## Points
+Problem 0.1: 25 points
+Problem 0.2: 25 points
+Problem 1: 25 points
+Problem 2: 25 points
+Problem 3: added late, no points
+
+## Problem 0.1
+
+This “problem” focuses on the use of R Markdown to write reproducible reports, GitHub for version control, and R Projects to organize your work.
+
+To that end:
+
+* create a public GitHub repo + local R Project; we suggest naming this repo / directory p8105_hw1_YOURUNI (e.g.  p8105_hw1_ajg2202 for Jeff), but that’s not required
+
+* create a single .Rmd file named p8105_hw1_YOURUNI.Rmd that renders to github_document
+
+* Your solutions to Problems 1 and 2 should be implemented in your .Rmd file, and your git commit history should reflect the process you used to solve these Problems.
+
+For this Problem, we will assess adherence to the instructions above regarding repo structure, git commit history, and whether we are able to knit your .Rmd to ensure that your work is reproducible.
+
+## Problem 0.2
+
+This “problem” focuses on correct styling for your solutions to Problems 1 and 2. We will look for:
+
+* meaningful variable / object names
+* readable code (one command per line; adequate whitespace and indentation; etc)
+* clearly-written text to explain code and results
+* a lack of superfluous code (e.g. no unused variables are defined)
+
+## Problem 1
+
+This problem focuses on variable types and coercion.
+
+Create a data frame comprised of:
+
+
+```{r}
+
+library(tibble)
+
+df = tibble(
+  random_sample = runif(10, 0, 5),
+  logical_vector = random_sample > 2,
+  character_vector = c("a", "a", "a", "a", "a", "b", "b", "b", "b", "b"),
+  factor_vector = factor(character_vector)
+)
+
+```
+
+* A random sample of size 10 from a uniform[0, 5] distribution
+
+```{r}
+
+random_sample = runif(10, 0, 5)
+random_sample
+
+```
+
+* A logical vector indicating whether elements of the sample are greater than 2
+
+```{r}
+
+logical_vector = random_sample > 2
+logical_vector
+
+```
+
+* A (length-10) character vector
+
+```{r}
+
+character_vector = c("a", "a", "a", "a", "a", "b", "b", "b", "b", "b")
+character_vector
+
+```
+
+* A (length-10) factor vector
+
+```{r}
+
+factor_vector = factor(character_vector)
+factor_vector
+
+```
+
+Try to take the mean of each variable in your dataframe. What works and what doesn’t? Why?
+
+```{r}
+
+mean(df$random_sample)
+mean(df$logical_vector)
+mean(df$character_vector)
+mean(df$factor_vector)
+
+# mean(df$character_vector) does not work
+# mean(df$factor_vector) does not work
+
+```
+
+In some cases, you can explicitly convert variables from one type to another. Write a code chunk that applies the as.numeric function to the logical, character, and factor variables (please show this chunk but not the output). 
+
+```{r}
+
+as.numeric(df$logical_vector)
+as.numeric(df$character_vector)
+as.numeric(df$factor_vector)
+
+```
+
+What happens? 
+
+```{r}
+
+# as.numeric(df$character_vector)
+# NAs introduced by coercion [1] NA NA NA NA NA NA NA NA NA NA
+
+```
+
+
+In a second code chunk, convert your character variable from character to factor to numeric; similarly, convert your factor variable from factor to character to numeric. 
+
+```{r}
+
+as.numeric(as.factor(df$character_vector))
+as.numeric(as.character(df$factor_vector))
+
+```
+
+What happens?
+
+```{r}
+
+# as.numeric(as.character(df$factor_vector))
+# NAs introduced by coercion [1] NA NA NA NA NA NA NA NA NA NA
+
+```
+
+
+# Problem 2
+This problem focuses on plotting and the use of inline R code.
+
+Create a data frame comprised of:
+
+```{r}
+
+df2 = tibble(
+  x = rnorm(1000),
+  y = rnorm(1000),
+  greater_than_0 = x + y > 0,
+  greater_than_0_numeric = as.numeric(greater_than_0),
+  greater_than_0_factor = as.factor(greater_than_0_numeric)
+)
+
+View(df2)
+
+```
+
+
+
+* x: a random sample of size 1000 from a standard Normal distribution
+
+```{r}
+
+x = rnorm(1000)
+
+```
+
+* y: a random sample of size 1000 from a standard Normal distribution
+
+```{r}
+
+y = rnorm(1000)
+
+```
+
+* A logical vector indicating whether the x + y > 0
+
+```{r}
+
+greater_than_0 = x + y > 0
+
+```
+
+* A numeric vector created by coercing the above logical vector
+
+```{r}
+
+greater_than_0_numeric = as.numeric(greater_than_0)
+
+```
+
+* A factor vector created by coercing the above logical vector
+
+```{r}
+
+greater_than_0_factor = as.factor(greater_than_0_numeric)
+
+```
+
+* Write a short description of your vector using inline R code, including: 
+* the size of the dataset 
+* the mean and median of x 
+* the proportion of cases for which the logical vector is TRUE
+
+```{r}
+
+nrow(df2)
+ncol(df2)
+summary(df2)
+
+```
+
+Make a scatterplot of y vs x; color points using the logical variable (adding color = ... inside of aes in your ggplot code should help). 
+
+Logical variable
+
+```{r}
+
+library(ggplot2)
+
+ggplot(df2, aes(x = x, y = y, color = greater_than_0)) +
+  geom_point()
+
+ggsave("logical_variable_scatterplot.pdf")
+
+# As it is a logical vector, the color scale has two colors
+
+
+```
+
+Make a second and third scatterplot that color points using the numeric and factor variables, respectively, and comment on the color scales.
+
+Export your first scatterplot to your project directory using ggsave.
+
+Numeric variable
+
+```{r}
+
+ggplot(df2, aes(x = x, y = y, color = greater_than_0_numeric)) +
+  geom_point()
+
+# As it is a numeric vector, the color scale is a range
+
+```
+
+Factor variable
+
+```{r}
+
+ggplot(df2, aes(x = x, y = y, color = greater_than_0_factor)) +
+  geom_point()
+
+# As it is a factor vector, the color scale has two colors
+
+```
